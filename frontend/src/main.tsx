@@ -1,23 +1,31 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App";
-import { ThirdwebProvider } from "@thirdweb-dev/react";
-import "./styles/globals.css";
+import ReactDOM from "react-dom/client";
+import { LineaTestnet } from "@thirdweb-dev/chains";
+import { ThirdwebProvider, metamaskWallet } from "@thirdweb-dev/react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "../src/index.css";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
-// This is the chain your dApp will work on.
-// Change this to the chain your app is built for.
-// You can also import additional chains from `@thirdweb-dev/chains` and pass them directly.
-const activeChain = "ethereum";
+import { Dashboard } from "./components/Dashboard";
 
-const container = document.getElementById("root");
-const root = createRoot(container!);
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
 root.render(
   <React.StrictMode>
     <ThirdwebProvider
-      clientId={import.meta.env.VITE_TEMPLATE_CLIENT_ID}
-      activeChain={activeChain}
+      activeChain={LineaTestnet}
+      clientId="871b630efee633d4d564cbae5559c01c"
+      supportedWallets={[metamaskWallet()]}
     >
-      <App />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+        </Routes>
+      </Router>
     </ThirdwebProvider>
   </React.StrictMode>
 );
