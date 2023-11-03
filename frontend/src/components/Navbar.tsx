@@ -1,116 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { Container, AppBar, Grid, Typography, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Container,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Box,
+} from "@mui/material";
+
+import { cryptonate } from "../assets";
+import { navlinks } from "../constants";
+import { ReusableButton } from "./ReusableButton";
+import SearchIcon from "@mui/icons-material/Search";
 
 export const Navbar = () => {
-  const preventDefault = (event: React.SyntheticEvent) =>
-    event.preventDefault();
-  const navigate = useNavigate();
-
-  const [isDashboardClicked, setIsDashboardClicked] = useState(false);
-  const [isCampaignsClicked, setIsCampaignsClicked] = useState(false);
-  const [isDonatorsClicked, setIsDonatorsClicked] = useState(false);
-
-  const handleDashboardClick = () => {
-    setIsDashboardClicked(true);
-    setIsCampaignsClicked(false);
-    setIsDonatorsClicked(false);
-
-    navigate("/");
-  };
-  const handleCampaignsClick = () => {
-    setIsDashboardClicked(false);
-    setIsCampaignsClicked(true);
-    setIsDonatorsClicked(false);
-
-    navigate("/campaigns");
-  };
-  const handleDonatorsClick = () => {
-    setIsDashboardClicked(false);
-    setIsCampaignsClicked(false);
-    setIsDonatorsClicked(true);
-    navigate("/donators");
-  };
-
   return (
-    <AppBar
-      sx={{
-        backgroundColor: "#712cf9",
-        height: "8%",
-        width: "100%",
-      }}
-    >
-      <Grid
-        container
-        width={"80%"}
-        sx={{
-          height: "100%",
-          placeSelf: "center",
-          alignItems: "center",
-          justifyContent: "space-evenly",
-        }}
-      >
-        <Grid item>
-          <Button
-            onClick={(e) => {
-              preventDefault(e);
-              handleDashboardClick();
+    <Container className="md:flex-row  flex flex-col-reverse justify-between mb-9 gap-6">
+      <Box className="lg:flex-1  flex  justify-between py-2 pl-4 pr-2 h-14 bg-[#1c1c24]">
+        <Box>
+          {/* DO NOT REMOVE. THIS BOX IS FOR SEARCH FIELD */}
+          {/* <TextField
+            id="searchfield"
+            label="Search"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
             }}
-            variant="text"
-            size="small"
-          >
-            <Typography
-              variant={isDashboardClicked ? "h6" : "subtitle1"}
-              sx={{
-                color: "white",
-                fontWeight: isDashboardClicked ? "bold" : "normal",
-              }}
-            >
-              Dashboard
-            </Typography>
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button
-            onClick={(e) => {
-              preventDefault(e);
-              handleCampaignsClick();
-            }}
-            variant="text"
-            size="small"
-          >
-            <Typography
-              variant={isCampaignsClicked ? "h6" : "subtitle1"}
-              sx={{
-                color: "white",
-                fontWeight: isCampaignsClicked ? "bold" : "normal",
-              }}
-            >
-              Campaigns
-            </Typography>
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button
-            onClick={(e) => {
-              preventDefault(e);
-              handleDonatorsClick();
-            }}
-            variant="text"
-            size="small"
-          >
-            <Typography
-              variant={isDonatorsClicked ? "h6" : "subtitle1"}
-              sx={{
-                color: "white",
-                fontWeight: isDonatorsClicked ? "bold" : "normal",
-              }}
-            >
-              Donators
-            </Typography>
-          </Button>
-        </Grid>
-      </Grid>
-    </AppBar>
+            variant="standard"
+          /> */}
+        </Box>
+        <Box>
+          <ReusableButton buttonLabel={"Connect Wallet"} />
+        </Box>
+      </Box>
+    </Container>
   );
 };
