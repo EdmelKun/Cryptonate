@@ -11,8 +11,8 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {},
     linea_goerli: {
-      url: "https://explorer.goerli.linea.build/api",
-      accounts: [`0x${process.env.PRIVATE_KEY}`],
+      url: "https://linea-goerli.infura.io/v3/fb5adea46518435b8885401b92e88e77",
+      accounts: [`0x${process.env.WALLET_PRIVATE_KEY}`],
     },
   },
   solidity: {
