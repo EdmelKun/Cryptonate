@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Box, Container, IconButton } from "@mui/material";
 
 import { cryptonate } from "../assets";
@@ -7,28 +7,8 @@ import { navlinks } from "../constants";
 
 export const Sidebar = () => {
   const navigate = useNavigate();
-
-  const [isDashboardClicked, setIsDashboardClicked] = useState(false);
-  const [isCampaignClicked, setIsCampaignClicked] = useState(false);
-  const [isDonorClicked, setIsDonorClicked] = useState(false);
-
-  const handleDashboardClick = () => {
-    setIsDashboardClicked(true);
-    setIsCampaignClicked(false);
-    setIsDonorClicked(false);
-  };
-
-  const handleCampaignClick = () => {
-    setIsCampaignClicked(true);
-    setIsDonorClicked(false);
-    setIsDashboardClicked(false);
-  };
-
-  const handleDonorClick = () => {
-    setIsDonorClicked(true);
-    setIsDashboardClicked(false);
-    setIsCampaignClicked(false);
-  };
+  const location = useLocation();
+  const [selectedLink, setSelectedLink] = useState(location.pathname);
 
   return (
     <Container
@@ -77,10 +57,19 @@ export const Sidebar = () => {
             <IconButton
               key={link.name}
               onClick={() => {
+                setSelectedLink(link.link);
                 navigate(link.link);
               }}
             >
-              <div className={``}>{link.icon}</div>
+              <div
+                className={
+                  link.link === selectedLink
+                    ? "bg-gray-200 border rounded-md p-2"
+                    : ""
+                }
+              >
+                {link.icon}
+              </div>
             </IconButton>
           ))}
         </Box>
