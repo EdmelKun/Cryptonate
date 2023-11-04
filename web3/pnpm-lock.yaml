@@ -16,6 +16,9 @@ dependencies:
     version: 0.14.3(ethers@6.8.0)
 
 devDependencies:
+  '@ethereum-waffle/mock-contract':
+    specifier: ^4.0.4
+    version: 4.0.4(ethers@6.8.0)
   '@matterlabs/hardhat-zksync-solc':
     specifier: ^0.3.17
     version: 0.3.17(hardhat@2.13.0)

@@ -6,6 +6,7 @@
     "release": "npx thirdweb@latest release"
   },
   "devDependencies": {
+    "@ethereum-waffle/mock-contract": "^4.0.4",
     "@matterlabs/hardhat-zksync-solc": "^0.3.17",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
     "@nomicfoundation/hardhat-ethers": "^3.0.4",
