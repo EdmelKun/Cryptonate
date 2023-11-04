@@ -23,6 +23,7 @@ root.render(
     <ThemeProvider theme={theme}>
       <ThirdwebProvider
         activeChain={LineaTestnet}
+        clientId={"871b630efee633d4d564cbae5559c01c"}
         supportedWallets={[metamaskWallet()]}
       >
         <Router>
