@@ -11,6 +11,7 @@ import { ThirdwebProvider, metamaskWallet } from "@thirdweb-dev/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import App from "./App";
+import { StateContextProvider } from "./context";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -27,7 +28,9 @@ root.render(
         supportedWallets={[metamaskWallet()]}
       >
         <Router>
-          <App />
+          <StateContextProvider>
+            <App />
+          </StateContextProvider>
         </Router>
       </ThirdwebProvider>
     </ThemeProvider>

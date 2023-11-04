@@ -13,6 +13,7 @@ import { navlinks } from "../constants";
 import { ReusableButton } from "./ReusableButton";
 import SearchIcon from "@mui/icons-material/Search";
 import { CreateCampaignModal } from "./CreateCampaignModal";
+import { useStateContext } from "../context";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export const Navbar = () => {
   const [selectedLink, setSelectedLink] = useState(location.pathname);
   const [toggleDrawer, setToggleDrawer] = useState(false);
   const [openCreateCampaign, setOpenCreateCampaign] = useState(false);
-  const ethAddress = "0x123";
+  const state = useStateContext();
 
   return (
     <Container className="md:flex-row  flex flex-col-reverse justify-between mb-9 gap-6">
@@ -83,12 +84,21 @@ export const Navbar = () => {
 
         <Box className="sm:flex hidden flex-row justify-end gap-4">
           <ReusableButton
-            buttonLabel={ethAddress ? "Create Campaign" : "Connect Wallet"}
+            buttonLabel={
+              state !== null
+                ? state.address
+                  ? "Create Campaign"
+                  : "Connect Wallet"
+                : ""
+            }
             handleClick={() => {
-              if (ethAddress) {
-                setOpenCreateCampaign(true);
-              } else {
-                console.log("Connect to wallet first");
+              if (state !== null) {
+                const { address, connect } = state;
+                if (address) {
+                  setOpenCreateCampaign(true);
+                } else {
+                  connect();
+                }
               }
             }}
           />

@@ -8,9 +8,12 @@ import {
   FormControl,
   TextField,
 } from "@mui/material";
+import { ethers } from "ethers";
 import { useFormik } from "formik";
-
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import { useStateContext } from "../context";
+import { checkIfImage } from "../utils";
 
 interface DialogProps {
   isOpen: boolean;
@@ -27,6 +30,8 @@ const campaignSchema = yup.object({
 });
 
 export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
+  const navigate = useNavigate();
+  const state = useStateContext();
   const { values, handleBlur, handleChange, handleSubmit, resetForm } =
     useFormik({
       initialValues: {
@@ -38,54 +43,76 @@ export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
         image: "",
       },
       validationSchema: campaignSchema,
-      onSubmit: (values) => {
-        console.log(values);
-        resetForm();
+      onSubmit: async (values) => {
+        if (state !== null) {
+          const { createCampaign } = state;
+          if (createCampaign) {
+            try {
+              checkIfImage(values.image, async (exists: boolean) => {
+                if (exists) {
+                  await createCampaign({
+                    ...values,
+                    target: ethers.utils.parseUnits(values.target, 18),
+                  });
+                  navigate("/");
+                } else {
+                  alert("Provide valid image url");
+                }
+              });
+              resetForm();
+            } catch (error) {
+              console.error("Failed to create campaign:", error);
+            }
+          } else {
+            console.error("createCampaign function is undefined");
+          }
+        } else {
+          console.log("State is null");
+        }
         onClose();
       },
     });
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle>Create Campaign</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Please enter your campaign details
-        </DialogContentText>
+      <DialogTitle className="bg-[#1c1c24] text-white">
+        Create Campaign
+      </DialogTitle>
+      <DialogContent className="bg-[#1c1c24]">
         <TextField
+          className="bg-white"
           autoFocus
           margin="dense"
           id="name"
           label="Name"
           type="text"
           fullWidth
-          variant="standard"
           required
           value={values.name}
           onChange={handleChange}
           onBlur={handleBlur}
         />
         <TextField
+          className="bg-white"
           autoFocus
           margin="dense"
           id="title"
           label="Title of Campaign"
           type="text"
           fullWidth
-          variant="standard"
           required
           value={values.title}
           onChange={handleChange}
           onBlur={handleBlur}
         />
         <TextField
+          className="bg-white"
           autoFocus
           margin="dense"
           id="description"
           label="Description of Campaign"
           type="text"
           fullWidth
-          variant="standard"
           rows={4}
           multiline
           required
@@ -94,48 +121,59 @@ export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
           onBlur={handleBlur}
         />
         <TextField
+          className="bg-white"
           autoFocus
           margin="dense"
           id="target"
           label="Target of Campaign"
           type="text"
           fullWidth
-          variant="standard"
           required
           value={values.target}
           onChange={handleChange}
           onBlur={handleBlur}
         />
         <TextField
+          className="bg-white"
           autoFocus
           margin="dense"
           id="deadline"
           label="Deadline of Campaign"
-          type="text"
+          type="date"
           fullWidth
-          variant="standard"
           required
           value={values.deadline}
           onChange={handleChange}
           onBlur={handleBlur}
         />
         <TextField
+          className="bg-white"
           autoFocus
           margin="dense"
           id="image"
-          label="Insert Image of Campaign"
-          type="text"
+          label="Insert Image URL of Campaign"
+          type="url"
           fullWidth
-          variant="standard"
           value={values.image}
           onChange={handleChange}
           onBlur={handleBlur}
         />
       </DialogContent>
       <form onSubmit={handleSubmit}>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit">Submit</Button>
+        <DialogActions className="bg-[#1c1c24]">
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              onClose();
+              resetForm();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button variant="contained" color="secondary" type="submit">
+            Submit
+          </Button>
         </DialogActions>
       </form>
     </Dialog>
