@@ -12,7 +12,11 @@ type StateContextType = {
   address: string | null;
   contract: any | null;
   connect: () => Promise<MetaMaskWallet>;
-  createCampaign: (formData: any) => Promise<void>;
+  createCampaign: (formData: any) => Promise<any>;
+  getCampaigns: () => Promise<any>;
+  getUserCampaigns: () => Promise<any>;
+  donateToCampaign: ({ campaignId, amount }: DonateType) => Promise<any>;
+  getDonations: (campaignId: number) => Promise<any>;
 };
 
 type StateContextProviderProps = {
@@ -25,6 +29,21 @@ type FormData = {
   image: string;
   target: number;
   deadline: string;
+};
+
+type CampaignType = {
+  owner: string;
+  title: string;
+  description: string;
+  image: string;
+  target: string;
+  deadline: string;
+  collectedAmount: string;
+};
+
+type DonateType = {
+  campaignId: number;
+  amount: string;
 };
 
 type CampaignArgs = [string, string, string, string, number, number];
@@ -64,6 +83,62 @@ export const StateContextProvider: React.FC<StateContextProviderProps> = ({
     }
   };
 
+  const getCampaigns = async () => {
+    const campaigns = await contract!.call("getCampaigns");
+
+    const mappedCampaigns = campaigns.map(
+      (campaign: CampaignType, index: number) => ({
+        owner: campaign.owner,
+        title: campaign.title,
+        description: campaign.description,
+        image: campaign.image,
+        target: ethers.utils.formatEther(campaign.target.toString()),
+        deadline: Number(campaign.deadline),
+        collectedAmount: ethers.utils.formatEther(
+          campaign.collectedAmount.toString()
+        ),
+        id: index,
+      })
+    );
+
+    return mappedCampaigns;
+  };
+
+  const getUserCampaigns = async () => {
+    const campaigns = await getCampaigns();
+
+    const userCampaigns = campaigns.filter((campaign: CampaignType) => {
+      return campaign.owner === ethAddress!;
+    });
+
+    return userCampaigns;
+  };
+
+  const donateToCampaign = async ({ campaignId, amount }: DonateType) => {
+    const data = await contract!.call("donateToCampaign", [campaignId], {
+      value: ethers.utils.parseEther(amount),
+    });
+
+    return data;
+  };
+
+  const getDonations = async (campaignId: number) => {
+    const donations = await contract!.call("getDonators", [campaignId]);
+    const totalDonations = donations[0].length;
+
+    const mappedDonations = [];
+
+    for (let i = 0; i < totalDonations; i++) {
+      mappedDonations.push({
+        donor: donations[0][i],
+        donation: ethers.utils.formatEther(donations[1][i].toString()),
+        id: i,
+      });
+    }
+
+    return mappedDonations;
+  };
+
   return (
     <StateContext.Provider
       value={{
@@ -71,6 +146,10 @@ export const StateContextProvider: React.FC<StateContextProviderProps> = ({
         contract,
         connect,
         createCampaign: publishCampaign,
+        getCampaigns,
+        getUserCampaigns,
+        donateToCampaign,
+        getDonations,
       }}
     >
       {children}

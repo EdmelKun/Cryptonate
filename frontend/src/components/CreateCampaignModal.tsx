@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -7,6 +8,7 @@ import {
   DialogTitle,
   FormControl,
   TextField,
+  Typography,
 } from "@mui/material";
 import { ethers } from "ethers";
 import { useFormik } from "formik";
@@ -78,86 +80,114 @@ export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
       <DialogTitle className="bg-[#1c1c24] text-white">
         Create Campaign
       </DialogTitle>
-      <DialogContent className="bg-[#1c1c24]">
-        <TextField
-          className="bg-white"
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Name"
-          type="text"
-          fullWidth
-          required
-          value={values.name}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-        <TextField
-          className="bg-white"
-          autoFocus
-          margin="dense"
-          id="title"
-          label="Title of Campaign"
-          type="text"
-          fullWidth
-          required
-          value={values.title}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-        <TextField
-          className="bg-white"
-          autoFocus
-          margin="dense"
-          id="description"
-          label="Description of Campaign"
-          type="text"
-          fullWidth
-          rows={4}
-          multiline
-          required
-          value={values.description}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-        <TextField
-          className="bg-white"
-          autoFocus
-          margin="dense"
-          id="target"
-          label="Target of Campaign"
-          type="text"
-          fullWidth
-          required
-          value={values.target}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-        <TextField
-          className="bg-white"
-          autoFocus
-          margin="dense"
-          id="deadline"
-          label="Deadline of Campaign"
-          type="date"
-          fullWidth
-          required
-          value={values.deadline}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-        <TextField
-          className="bg-white"
-          autoFocus
-          margin="dense"
-          id="image"
-          label="Insert Image URL of Campaign"
-          type="url"
-          fullWidth
-          value={values.image}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
+      <DialogContent className="bg-[#1c1c24] ">
+        <Box className="flex flex-row gap-5">
+          <Box className="mb-5">
+            <Typography variant="body2" className=" text-violet-200">
+              Name
+            </Typography>
+            <TextField
+              className="bg-white"
+              autoFocus
+              margin="dense"
+              id="name"
+              name="name"
+              type="text"
+              fullWidth
+              required
+              value={values.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+            <Typography variant="body2" className=" text-violet-200">
+              Title of Campaign
+            </Typography>
+            <TextField
+              className="bg-white"
+              autoFocus
+              margin="dense"
+              id="title"
+              name="title"
+              type="text"
+              fullWidth
+              required
+              value={values.title}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </Box>
+
+          <Box className="mb-5">
+            <Typography variant="body2" className=" text-violet-200">
+              Target ETH of Campaign
+            </Typography>
+            <TextField
+              className="bg-white"
+              autoFocus
+              margin="dense"
+              id="target"
+              name="target"
+              type="text"
+              fullWidth
+              required
+              value={values.target}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+            <Typography variant="body2" className=" text-violet-200">
+              Deadline of Campaign
+            </Typography>
+            <TextField
+              className="bg-white"
+              autoFocus
+              margin="dense"
+              id="deadline"
+              name="deadline"
+              type="date"
+              fullWidth
+              required
+              value={values.deadline}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </Box>
+        </Box>
+        <Box className="mb-5">
+          <Typography variant="body2" className=" text-violet-200">
+            Description of Campaign
+          </Typography>
+          <TextField
+            className="bg-white"
+            autoFocus
+            margin="dense"
+            id="description"
+            name="description"
+            type="text"
+            fullWidth
+            rows={4}
+            multiline
+            required
+            value={values.description}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <Typography variant="body2" className=" text-violet-200">
+            Insert Image URL of Campaign
+          </Typography>
+          <TextField
+            className="bg-white"
+            autoFocus
+            margin="dense"
+            id="image"
+            name="image"
+            type="url"
+            fullWidth
+            value={values.image}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </Box>
       </DialogContent>
       <form onSubmit={handleSubmit}>
         <DialogActions className="bg-[#1c1c24]">
