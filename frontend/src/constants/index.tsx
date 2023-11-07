@@ -29,17 +29,17 @@ export const navlinks = [
     ),
     link: "/campaigns",
   },
-  {
-    name: "donors",
-    icon: (
-      <SupervisedUserCircleIcon
-        sx={{
-          width: "30px",
-          height: "30px",
-        }}
-        htmlColor="#8b5cf6"
-      />
-    ),
-    link: "/donors",
-  },
+  // {
+  //   name: "donors",
+  //   icon: (
+  //     <SupervisedUserCircleIcon
+  //       sx={{
+  //         width: "30px",
+  //         height: "30px",
+  //       }}
+  //       htmlColor="#8b5cf6"
+  //     />
+  //   ),
+  //   link: "/donors",
+  // },
 ];
