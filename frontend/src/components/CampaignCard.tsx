@@ -35,6 +35,7 @@ export const CampaignCard = ({
   handleViewDonors,
 }: CardProps) => {
   const formatRemainingDays = daysLeft(new Date(deadline));
+  const IsCampaignNotDone = new Date(deadline).getTime() < Date.now();
 
   return (
     <>
@@ -68,7 +69,10 @@ export const CampaignCard = ({
               </Typography>
 
               <Typography variant="body2" marginTop={"15px"}>
-                Deadline: {formatRemainingDays} days left
+                Deadline:
+                {Number(formatRemainingDays) < 0
+                  ? " Finished"
+                  : ` ${formatRemainingDays} days left`}
               </Typography>
             </Box>
           </Box>
@@ -79,12 +83,18 @@ export const CampaignCard = ({
           </Box>
         </CardContent>
         <CardActions className="justify-center">
-          <Button size="small" variant="contained" onClick={handleViewDonors}>
+          <Button size="small" variant="outlined" onClick={handleViewDonors}>
             View Donors
           </Button>
-          <Button size="small" variant="contained" onClick={handleDonate}>
-            Donate to Campaign
-          </Button>
+          {!IsCampaignNotDone ? (
+            <>
+              <Button size="small" variant="contained" onClick={handleDonate}>
+                Donate to Campaign
+              </Button>
+            </>
+          ) : (
+            ""
+          )}
         </CardActions>
       </Card>
     </>
