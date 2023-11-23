@@ -1,12 +1,13 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
+import { ContractFactory, Signer } from "ethers";
 
 describe("Donation Contract", function () {
-  let Donation;
+  let Donation: ContractFactory;
   let donation: any;
-  let owner: { address: string };
-  let addr1: { address: string };
-  let addr2: { address: string };
+  let owner: Signer;
+  let addr1: Signer;
+  let addr2: Signer;
 
   beforeEach(async function () {
     [owner, addr1, addr2] = await ethers.getSigners();
@@ -39,7 +40,7 @@ describe("Donation Contract", function () {
     );
     await tx.wait();
 
-    const campaignCount = BigInt(await donation.numberOfCampaigns());
+    const campaignCount = await donation.numberOfCampaigns();
     return campaignCount - BigInt(1);
   };
 
@@ -54,7 +55,7 @@ describe("Donation Contract", function () {
   describe("Campaign Creation", function () {
     it("Should create a campaign correctly", async function () {
       const campaignId = await createCampaign(
-        owner.address,
+        await owner.getAddress(),
         "Save the Whales",
         "Help us save the whales",
         "whale_image.jpg",
@@ -63,7 +64,7 @@ describe("Donation Contract", function () {
       );
 
       const campaign = await donation.campaigns(campaignId);
-      expect(campaign.owner).to.equal(owner.address);
+      expect(campaign.owner).to.equal(await owner.getAddress());
       expect(campaign.title).to.equal("Save the Whales");
       expect(campaign.target).to.equal(parseEther("10"));
       expect(campaign.deadline).to.equal(futureDeadline);
@@ -73,7 +74,7 @@ describe("Donation Contract", function () {
     it("Should fail to create a campaign with a past deadline", async function () {
       await expect(
         createCampaign(
-          owner.address,
+          await owner.getAddress(),
           "Past Campaign",
           "Description",
           "past_image.jpg",
@@ -87,7 +88,7 @@ describe("Donation Contract", function () {
   describe("Donations", function () {
     it("Should allow donations to a campaign", async function () {
       const campaignId = await createCampaign(
-        owner.address,
+        await owner.getAddress(),
         "Plant Trees",
         "Planting trees for a better tomorrow",
         "tree_image.jpg",
@@ -105,7 +106,7 @@ describe("Donation Contract", function () {
 
     it("Should correctly update the collected amount after multiple donations", async function () {
       const campaignId = await createCampaign(
-        owner.address,
+        await owner.getAddress(),
         "Multi Donation",
         "Multiple donations",
         "multi_donation.jpg",
@@ -126,7 +127,7 @@ describe("Donation Contract", function () {
 
     it("Should allow donations even after the target is reached", async function () {
       const campaignId = await createCampaign(
-        owner.address,
+        await owner.getAddress(),
         "Funding Education",
         "Supporting education programs",
         "education.jpg",
@@ -152,7 +153,7 @@ describe("Donation Contract", function () {
   describe("Data Retreival", function () {
     it("Should retrieve all campaigns correctly", async function () {
       await createCampaign(
-        owner.address,
+        await owner.getAddress(),
         "Campaign 1",
         "Description 1",
         "image1.jpg",
@@ -160,7 +161,7 @@ describe("Donation Contract", function () {
         futureDeadline
       );
       await createCampaign(
-        addr1.address,
+        await addr1.getAddress(),
         "Campaign 2",
         "Description 2",
         "image2.jpg",
@@ -172,14 +173,14 @@ describe("Donation Contract", function () {
 
       expect(allCampaigns.length).to.equal(2);
       expect(allCampaigns[0].title).to.equal("Campaign 1");
-      expect(allCampaigns[0].owner).to.equal(owner.address);
+      expect(allCampaigns[0].owner).to.equal(await owner.getAddress());
       expect(allCampaigns[1].title).to.equal("Campaign 2");
-      expect(allCampaigns[1].owner).to.equal(addr1.address);
+      expect(allCampaigns[1].owner).to.equal(await addr1.getAddress());
     });
 
     it("Should retrieve campaign and donator details", async function () {
       const campaignId = await createCampaign(
-        owner.address,
+        await owner.getAddress(),
         "Clean the Ocean",
         "Ocean cleanup initiative",
         "ocean_image.jpg",
@@ -195,7 +196,10 @@ describe("Donation Contract", function () {
         .donateToCampaign(campaignId, { value: parseEther("3") });
 
       const [donators, donations] = await donation.getDonators(campaignId);
-      expect(donators).to.include.members([addr1.address, addr2.address]);
+      expect(donators).to.include.members([
+        await addr1.getAddress(),
+        await addr2.getAddress(),
+      ]);
       expect(donations.map(formatEther)).to.deep.equal(["2.0", "3.0"]);
     });
   });
