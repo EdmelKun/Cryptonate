@@ -2,11 +2,11 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 
 describe("Donation Contract", function () {
-  let Donation: any;
+  let Donation;
   let donation: any;
-  let owner: any;
-  let addr1: any;
-  let addr2: any;
+  let owner: { address: string };
+  let addr1: { address: string };
+  let addr2: { address: string };
 
   beforeEach(async function () {
     [owner, addr1, addr2] = await ethers.getSigners();
@@ -26,7 +26,7 @@ describe("Donation Contract", function () {
     title: string,
     description: string,
     image: string,
-    target: any,
+    target: bigint,
     deadline: number
   ) => {
     const tx = await donation.createCampaign(
@@ -47,7 +47,7 @@ describe("Donation Contract", function () {
     return ethers.parseEther(value);
   };
 
-  const formatEther = (value: any) => {
+  const formatEther = (value: string) => {
     return ethers.formatEther(value);
   };
 
