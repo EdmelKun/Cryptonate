@@ -6,8 +6,10 @@ import { HardhatUserConfig } from "hardhat/config";
 
 dotenv.config();
 
+const network = process.env.RUNNING_TESTS ? "hardhat" : "linea_goerli";
+
 const config: HardhatUserConfig = {
-  defaultNetwork: "linea_goerli",
+  defaultNetwork: network,
   networks: {
     hardhat: {},
     linea_goerli: {

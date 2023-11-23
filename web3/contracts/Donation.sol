@@ -29,7 +29,7 @@ contract Donation {
         Campaign storage campaign = campaigns[numberOfCampaigns];
 
         require(
-            campaign.deadline < block.timestamp,
+            _deadline > block.timestamp,
             "The deadline should be in the future"
         );
 
