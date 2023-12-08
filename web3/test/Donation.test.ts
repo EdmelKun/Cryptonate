@@ -260,7 +260,7 @@ describe("Donation Contract", function () {
     });
 
     it("Should handle very large donation amounts", async function () {
-      const largeNumber = ethers.parseEther("1") * BigInt(9982); // 9982 ethers (max accomodated by test environment)
+      const largeNumber = parseEther("9982"); // 9982 ethers (max accomodated by test environment)
 
       const campaignId = await createCampaign(
         await owner.getAddress(),
