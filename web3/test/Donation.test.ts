@@ -83,6 +83,20 @@ describe("Donation Contract", function () {
         )
       ).to.be.revertedWith("The deadline should be in the future");
     });
+
+    it("Should handle creation of a campaign with zero target", async function () {
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "Zero Target",
+        "Zero target test",
+        "zero_target.jpg",
+        parseEther("0"),
+        futureDeadline
+      );
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.target).to.equal(parseEther("0"));
+    });
   });
 
   describe("Donations", function () {
@@ -102,6 +116,40 @@ describe("Donation Contract", function () {
 
       const campaign = await donation.campaigns(campaignId);
       expect(campaign.collectedAmount).to.equal(parseEther("1"));
+    });
+
+    it("Should handle exact target amount donation", async function () {
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "Target Test",
+        "Test for various donation scenarios",
+        "target_test.jpg",
+        parseEther("5"),
+        futureDeadline
+      );
+      await donation
+        .connect(addr1)
+        .donateToCampaign(campaignId, { value: parseEther("5") });
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.collectedAmount).to.equal(parseEther("5"));
+    });
+
+    it("Should handle donations less than target amount", async function () {
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "Target Test",
+        "Test for various donation scenarios",
+        "target_test.jpg",
+        parseEther("5"),
+        futureDeadline
+      );
+      await donation
+        .connect(addr1)
+        .donateToCampaign(campaignId, { value: parseEther("3") });
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.collectedAmount).to.equal(parseEther("3"));
     });
 
     it("Should correctly update the collected amount after multiple donations", async function () {
