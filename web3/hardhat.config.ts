@@ -7,6 +7,7 @@ import { HardhatUserConfig } from "hardhat/config";
 dotenv.config();
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "linea_goerli",
   networks: {
     hardhat: {},
     linea_goerli: {
