@@ -135,7 +135,9 @@ describe("Donation Contract", function () {
         "dmfnwiu434hoignerogne3igmg::>?<>{+%^%&%^(@#$@SDMFSGNKEGdghsbdfisbdfbweufqisjfnidfbfbgfb",
         "lkfgmerogeFGFHFHYRThdjhnweorth398y348t4t<>?<>}{$%#$(%(#TFGDFNGwhbefwhbfuwgvef",
         "kjndvijsnfowejr9347h3uigngbnw3u8o5g>?<>?<>}{}0w5i0jih.jpg",
-        parseEther("99999999999999999999999999999999999999999999999999999999"),
+        parseEther(
+          "99999999999999999999999999999999999999999999999999999999.999999999"
+        ),
         farFutureDeadline
       );
 
@@ -151,7 +153,9 @@ describe("Donation Contract", function () {
         "kjndvijsnfowejr9347h3uigngbnw3u8o5g>?<>?<>}{}0w5i0jih.jpg"
       );
       expect(campaign.target).to.equal(
-        parseEther("99999999999999999999999999999999999999999999999999999999")
+        parseEther(
+          "99999999999999999999999999999999999999999999999999999999.999999999"
+        )
       );
       expect(campaign.deadline).to.equal(farFutureDeadline);
     });
@@ -256,14 +260,14 @@ describe("Donation Contract", function () {
     });
 
     it("Should handle very large donation amounts", async function () {
-      const largeNumber = ethers.parseUnits("1", "ether") * BigInt(9982); // 9982 ethers (max accomodated by test environment)
+      const largeNumber = ethers.parseEther("1") * BigInt(9982); // 9982 ethers (max accomodated by test environment)
 
       const campaignId = await createCampaign(
         await owner.getAddress(),
         "Numeric Edge Test",
         "Testing numeric edge cases",
         "numeric_edge.jpg",
-        largeNumber,
+        parseEther("1000"),
         futureDeadline
       );
 
@@ -272,6 +276,29 @@ describe("Donation Contract", function () {
           .connect(addr1)
           .donateToCampaign(campaignId, { value: largeNumber })
       ).not.to.be.reverted;
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.collectedAmount).to.equal(largeNumber);
+    });
+
+    it("Should handle decimal donation amounts", async function () {
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "Numeric Edge Test",
+        "Testing numeric edge cases",
+        "numeric_edge.jpg",
+        parseEther("100"),
+        futureDeadline
+      );
+
+      await expect(
+        donation.connect(addr1).donateToCampaign(campaignId, {
+          value: parseEther("0.90"),
+        })
+      ).not.to.be.reverted;
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.collectedAmount).to.equal(parseEther("0.90"));
     });
   });
 
