@@ -26,22 +26,27 @@ export const Navbar = () => {
   return (
     <Container className="md:flex-row  flex flex-col-reverse justify-between mb-9 gap-6">
       <Box className="lg:flex-1  flex  justify-between py-2 pl-4 pr-2 h-14 bg-[#1c1c24]">
-        <Box>
-          {/* DO NOT REMOVE. THIS BOX IS FOR SEARCH FIELD */}
-          {/* <TextField
-            id="searchfield"
-            label="Search"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+        <Box className="sm:flex-1 flex  flex-row justify-end self-end gap-4">
+          <ReusableButton
+            buttonLabel={
+              state !== null
+                ? state.address
+                  ? "Create Campaign"
+                  : "Connect Wallet"
+                : ""
+            }
+            handleClick={() => {
+              if (state !== null) {
+                const { address, connect } = state;
+                if (address) {
+                  setOpenCreateCampaign(true);
+                } else {
+                  connect();
+                }
+              }
             }}
-            variant="standard"
-          /> */}
+          />
         </Box>
-
         <Box className="sm:hidden flex justify-between items-center relative">
           <Box className="w-[40px] h-[40px] rounded-[10px] bg-[#2c2f32] flex justify-center items-center cursor-pointer">
             <img
@@ -80,28 +85,6 @@ export const Navbar = () => {
               </Box>
             </Box>
           </Box>
-        </Box>
-
-        <Box className="sm:flex hidden flex-row justify-end gap-4">
-          <ReusableButton
-            buttonLabel={
-              state !== null
-                ? state.address
-                  ? "Create Campaign"
-                  : "Connect Wallet"
-                : ""
-            }
-            handleClick={() => {
-              if (state !== null) {
-                const { address, connect } = state;
-                if (address) {
-                  setOpenCreateCampaign(true);
-                } else {
-                  connect();
-                }
-              }
-            }}
-          />
         </Box>
       </Box>
       <CreateCampaignModal
