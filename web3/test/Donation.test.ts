@@ -21,6 +21,7 @@ describe("Donation Contract", function () {
 
   const futureDeadline = getTimestamp(86400);
   const pastDeadline = getTimestamp(-86400);
+  const farFutureDeadline = getTimestamp(999999999);
 
   const createCampaign = async (
     ownerAddress: string,
@@ -66,6 +67,8 @@ describe("Donation Contract", function () {
       const campaign = await donation.campaigns(campaignId);
       expect(campaign.owner).to.equal(await owner.getAddress());
       expect(campaign.title).to.equal("Save the Whales");
+      expect(campaign.description).to.equal("Help us save the whales");
+      expect(campaign.image).to.equal("whale_image.jpg");
       expect(campaign.target).to.equal(parseEther("10"));
       expect(campaign.deadline).to.equal(futureDeadline);
       expect(await donation.numberOfCampaigns()).to.equal(1);
@@ -84,6 +87,20 @@ describe("Donation Contract", function () {
       ).to.be.revertedWith("The deadline should be in the future");
     });
 
+    it("Should create a campaign with a deadline set in the far future", async function () {
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "Save the Whales",
+        "Help us save the whales",
+        "whale_image.jpg",
+        parseEther("10"),
+        farFutureDeadline
+      );
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.deadline).to.equal(farFutureDeadline);
+    });
+
     it("Should handle creation of a campaign with zero target", async function () {
       const campaignId = await createCampaign(
         await owner.getAddress(),
@@ -96,6 +113,47 @@ describe("Donation Contract", function () {
 
       const campaign = await donation.campaigns(campaignId);
       expect(campaign.target).to.equal(parseEther("0"));
+    });
+
+    it("Should handle creation of a campaign with huge target", async function () {
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "Zero Target",
+        "Zero target test",
+        "zero_target.jpg",
+        parseEther("999999999999"),
+        futureDeadline
+      );
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.target).to.equal(parseEther("999999999999"));
+    });
+
+    it("Should create a campaign with extreme inputs", async function () {
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "dmfnwiu434hoignerogne3igmg::>?<>{+%^%&%^(@#$@SDMFSGNKEGdghsbdfisbdfbweufqisjfnidfbfbgfb",
+        "lkfgmerogeFGFHFHYRThdjhnweorth398y348t4t<>?<>}{$%#$(%(#TFGDFNGwhbefwhbfuwgvef",
+        "kjndvijsnfowejr9347h3uigngbnw3u8o5g>?<>?<>}{}0w5i0jih.jpg",
+        parseEther("99999999999999999999999999999999999999999999999999999999"),
+        farFutureDeadline
+      );
+
+      const campaign = await donation.campaigns(campaignId);
+      expect(campaign.owner).to.equal(await owner.getAddress());
+      expect(campaign.title).to.equal(
+        "dmfnwiu434hoignerogne3igmg::>?<>{+%^%&%^(@#$@SDMFSGNKEGdghsbdfisbdfbweufqisjfnidfbfbgfb"
+      );
+      expect(campaign.description).to.equal(
+        "lkfgmerogeFGFHFHYRThdjhnweorth398y348t4t<>?<>}{$%#$(%(#TFGDFNGwhbefwhbfuwgvef"
+      );
+      expect(campaign.image).to.equal(
+        "kjndvijsnfowejr9347h3uigngbnw3u8o5g>?<>?<>}{}0w5i0jih.jpg"
+      );
+      expect(campaign.target).to.equal(
+        parseEther("99999999999999999999999999999999999999999999999999999999")
+      );
+      expect(campaign.deadline).to.equal(farFutureDeadline);
     });
   });
 
@@ -195,6 +253,25 @@ describe("Donation Contract", function () {
 
       const campaign = await donation.campaigns(campaignId);
       expect(campaign.collectedAmount).to.equal(parseEther("4"));
+    });
+
+    it("Should handle very large donation amounts", async function () {
+      const largeNumber = ethers.parseUnits("1", "ether") * BigInt(9982); // 9982 million ethers (max accomodated by test environment)
+
+      const campaignId = await createCampaign(
+        await owner.getAddress(),
+        "Numeric Edge Test",
+        "Testing numeric edge cases",
+        "numeric_edge.jpg",
+        largeNumber,
+        futureDeadline
+      );
+
+      await expect(
+        donation
+          .connect(addr1)
+          .donateToCampaign(campaignId, { value: largeNumber })
+      ).not.to.be.reverted;
     });
   });
 
