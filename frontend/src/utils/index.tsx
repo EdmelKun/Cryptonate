@@ -20,3 +20,17 @@ export const checkIfImage = (url: string, callback: any) => {
   img.onload = () => callback(true);
   img.onerror = () => callback(false);
 };
+
+export const checkDeadline = (deadline: Date) => {
+  if (deadline.getTime() < Date.now()) {
+    return true;
+  }
+  return false;
+};
+
+export const checkTargetEth = (targetEth: string) => {
+  if (Number(targetEth) < 0 || Number.isNaN(Number(targetEth))) {
+    return true;
+  }
+  return false;
+};

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,10 +13,11 @@ import {
 } from "@mui/material";
 import { ethers } from "ethers";
 import { useFormik } from "formik";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useStateContext } from "../context";
-import { checkIfImage } from "../utils";
+import { checkDeadline, checkIfImage, checkTargetEth } from "../utils";
 
 interface DialogProps {
   isOpen: boolean;
@@ -32,8 +34,8 @@ const campaignSchema = yup.object({
 });
 
 export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
-  const navigate = useNavigate();
   const state = useStateContext();
+  const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
   const { values, handleBlur, handleChange, handleSubmit, resetForm } =
     useFormik({
       initialValues: {
@@ -52,16 +54,28 @@ export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
             try {
               checkIfImage(values.image, async (exists: boolean) => {
                 if (exists) {
-                  await createCampaign({
-                    ...values,
-                    target: ethers.utils.parseUnits(values.target, 18),
-                  });
-                  navigate("/");
+                  if (checkDeadline(new Date(values.deadline)) === false) {
+                    if (checkTargetEth(values.target) === false) {
+                      setIsCreatingCampaign(true);
+                      await createCampaign({
+                        ...values,
+                        target: ethers.utils.parseUnits(values.target, 18),
+                      });
+                      setIsCreatingCampaign(false);
+                      resetForm();
+                      onClose();
+                    } else {
+                      alert(
+                        "Target ETH must be a number and is greater than 0"
+                      );
+                    }
+                  } else {
+                    alert("The deadline should be in the future");
+                  }
                 } else {
-                  alert("Provide valid image url");
+                  alert("Please provide valid image url");
                 }
               });
-              resetForm();
             } catch (error) {
               console.error("Failed to create campaign:", error);
             }
@@ -69,9 +83,8 @@ export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
             console.error("createCampaign function is undefined");
           }
         } else {
-          console.log("State is null");
+          console.error("State is null");
         }
-        onClose();
       },
     });
 
@@ -202,7 +215,17 @@ export const CreateCampaignModal = ({ isOpen, onClose }: DialogProps) => {
             Cancel
           </Button>
           <Button variant="contained" color="secondary" type="submit">
-            Submit
+            {isCreatingCampaign ? (
+              <CircularProgress
+                color="inherit"
+                size={25}
+                sx={{
+                  marginX: 5,
+                }}
+              />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </DialogActions>
       </form>
